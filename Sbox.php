@@ -2,7 +2,7 @@
 
 class Sbox{
 
-	public static $sBox;
+	public $sBox;
 
 	// The sBox of AES
 	function __construct(){		
@@ -30,6 +30,31 @@ class Sbox{
 		return $this->sBox[$sBox_key];
 	}
 }
+
+
+function strToHex($string)
+{
+    $hex='';
+    for ($i=0; $i < strlen($string); $i++)
+    {
+        $hex .= dechex(ord($string[$i]));
+    }
+    return $hex;
+}
+
+// $a = strToHex(" ");
+// echo $a;
+// function hexToStr($hex)
+// {
+//     $string='';
+//     for ($i=0; $i < strlen($hex)-1; $i+=2)
+//     {
+//         $string .= chr(hexdec($hex[$i].$hex[$i+1]));
+//     }
+//     return $string;
+// }
+
+// echo hexToStr($a);
 
 // $val1 = decbin(hexdec('0x7385168e'));
 // echo $val1;

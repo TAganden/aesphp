@@ -1,0 +1,43 @@
+<title>AES 128 Bit</title>
+
+<!-- Latest compiled and minified JavaScript -->
+<script src="jquery.min.js"></script>
+
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
+
+<!-- Optional theme -->
+<link rel="stylesheet" href="bootstrap/css/bootstrap-theme.min.css">
+
+<!-- Latest compiled and minified JavaScript -->
+<script src="bootstrap/js/bootstrap.min.js"></script>
+
+<link rel="stylesheet" href="jquery-ui.css">
+
+<script src="jquery-ui.js"></script>
+
+<script type="text/javascript">
+function textCounter(field, cnt, maxlimit) {         
+
+	var cntfield = $('.'+cnt);	
+
+    if (field.value.length > maxlimit) // if too long...trim it!
+		  field.value = field.value.substring(0, maxlimit);
+		// otherwise, update 'characters left' counter
+		else
+		  $('.'+cnt).html((maxlimit - field.value.length) + ' characters left');
+}
+
+</script>
+
+<div style="padding-left:400px; padding-top:300px; width:100%; height:100%;">
+  <form action="aes_ui.php" method="post">
+    <div class="form-group" style="height:60px;">
+      <input type="text" class="form-control" id="aes-input" name="aes-input" placeholder="Enter your data ...." style="width:400px; height:50px; float:left;"
+      onKeyDown="textCounter(this, 'char_left_4', 16);" onKeyUp="textCounter(this,'char_left_4' ,16)">
+		<h4 id="char_left" class="char_left_4" style="position:relative; left:15px; top:15px;"></h4>
+    </div>
+
+    <button type="submit" class="btn btn-default">Encrypt It !!</button>
+  </form>
+</div>

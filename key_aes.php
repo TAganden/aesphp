@@ -15,7 +15,7 @@ class key_aes{
 		Storing the AES keys in Hex 
 		format as a Single-dimension array
 	*/ 
-	private $aes_key_bytes;
+	public $aes_key_bytes;
 
 	/*
 		Storing the AES keys in a word 
@@ -30,7 +30,7 @@ class key_aes{
 	private $aes_matrix;
 
 	// The key size of AES - 128, 192, 256
-	private $aes_key_size;
+	public $aes_key_size;
 
 	/*
 		The expanded key size which could be
@@ -51,34 +51,54 @@ class key_aes{
 
 		$this->aes_key_size = $key_size;
 
+		for($k=0; $k<($key_size/4); $k++){
+			$tmp = dechex(rand(0,15));
+			if($k != 0)
+				$this->aes_key_bytes[0] .= $tmp;
+			else 
+				$this->aes_key_bytes[0] = $tmp;	
+		}	
+
+		$this->display_aes_key_matrix($this->aes_key_bytes[0]);
+	}	
+
+	public function gen_cryp_secure_key($key_size=128){
+
+		$this->aes_key_size = $key_size;
+
 		if(is_readable('/dev/urandom')){
 			$this->randomFileHandler = fopen('/dev/urandom', 'r');
 			if($this->randomFileHandler === false)
 				throw new Exception('/dev/urandom is readble but can\'t get a file handler with fopen, please check the code.');
 		}
+		else
+			throw new Exception('Cannot read the /dev/urandom file. May be you do not have access to that.');
 
 		$aes_key_size = $key_size/8;
 		$cmd = "dd if=/dev/urandom bs=1 count=$aes_key_size 2>/dev/null | hexdump -v -e '\"%02X\"' ";
-		exec($cmd, $this->aes_key_bytes);
-
+		$this->aes_key_bytes = exec($cmd, $this->aes_key_bytes);
+		
 		if(strlen($this->aes_key_bytes[0]) != ($key_size/4)){
-			sleep(5);
+			echo 'sleeping';
+			sleep(2);
 			$this->gen_aes_key_hex($key_size);
 		}
 
 		$this->display_aes_key_matrix($this->aes_key_bytes[0]);
-	}	
+	}
 
 	/**
 	 * [get_aes_key Returns the generated AES key not
 	 * the expanded one ....]
-	 * @return [String] [AES key of 128 or 192 or 256 Bit]
 	 */
-	public function get_aes_key(){
+	public function get_aes_key($key_size=128){
 		if($this->aes_key_bytes === null)
-			$this->gen_aes_key_hex();
+			$this->gen_aes_key_hex($key_size);
 
-		return $this->aes_key_bytes[0];
+		$this->aes_key_hexToWord();
+		$this->key_expansion($this->aes_key_words[0]);
+
+		// return $this->aes_key_bytes[0];
 	}
 
 	/**
@@ -98,9 +118,6 @@ class key_aes{
 	 */
 	public function display_aes_key_matrix($tmp_aes_key){
 
-		if(!empty($this->aes_matrix))
-			return $this->aes_matrix;
-
 		$key_pos=0;
 
 		for($i=0; $i<($this->aes_key_size/32); $i++){
@@ -117,6 +134,12 @@ class key_aes{
 			$this->aes_matrix[3][$i] = $tmp_aes_key[$key_pos].$tmp_aes_key[++$key_pos];
 			$key_pos++;
 		}
+
+		// echo 'the input of aes is  <br/>';
+		// var_dump($tmp_aes_key);
+		// echo 'the output of aes matrix <br/>';
+		// var_dump($this->aes_matrix);
+
 		return $this->aes_matrix;
 	}
 
@@ -176,9 +199,10 @@ class key_aes{
 
 		$sBox_ref = new Sbox;
 		$tmp = str_split($key);
-		$tmp_sKey = "";
+		
 		// $maxCtr = ($this->aes_key_size)/16;
 		unset($tmp_sKey);
+		$tmp_sKey = "";
 
 		for ($i=0,$j=0; $i < 8; $i+=2,$j++) { 
 			
@@ -322,19 +346,29 @@ class key_aes{
 		}		
 	}
 
+	public function fetch_roundKey($roundNo){
+
+		// Define an offset ...
+		$key_offset = $roundNo*4;
+		$round_key = "";
+
+		for($ctr=0; $ctr<=3; $ctr++, ++$key_offset)
+			$round_key .= $this->aes_key_expanded[$key_offset];
+
+		return $round_key;
+	}	
+
 }
 
-$key = new key_aes;
-$key->gen_aes_key_hex(128);
-echo 'Old Key <br/>';
-var_dump($key->get_aes_key());
-echo '<br/> <br/> New Key';
-var_dump($key->display_aes_key_matrix($key->get_aes_key()));
-var_dump($key->aes_key_hexToWord());
+// $key = new key_aes;
+// $key->gen_aes_key_hex(128);
+// echo 'Old Key <br/>';
+// $key->get_aes_key();
+// echo '<br/> <br/> New Key';
+// var_dump($key->display_aes_key_matrix($key->get_aes_key()));
+// var_dump($key->aes_key_hexToWord());
 
-$key->key_expansion($key->aes_key_words[0]);
+// $key->key_expansion($key->aes_key_words[0]);
 
-var_dump($key->aes_key_expanded);
-
-
+// var_dump($key->aes_key_expanded);
 
