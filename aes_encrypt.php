@@ -115,10 +115,12 @@ class aes_encrypt{
 		else
 			$total_round = 14;	
 
-		/*
-			Generating AES key of the user-defined key size
-		 */
-		$this->aes_key_obj->get_aes_key($aes_key_size);
+		// Key generation of AES
+		if(strlen(trim($aes_key)) == 0)
+			$this->aes_key_obj->get_aes_key($aes_key_size);
+		else
+			$this->aes_key_obj->set_aes_key_hex($aes_key_size, $aes_key);
+		
 		
 		$this->first_ip_block = $this->last_ip_block = $this->aes_trace;
 		

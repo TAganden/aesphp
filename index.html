@@ -28,14 +28,49 @@ function textCounter(field, cnt, maxlimit) {
 		  $('.'+cnt).html((maxlimit - field.value.length) + ' characters left');
 }
 
+function isValidHex(str) {
+
+  if(trim(str).length == 0)
+    return true;
+
+  if(str.match(/^[a-f0-9]$/i) !== null){
+    $('#hex-error').addClass('hide');
+    $('#hex-error').removeClass('show');
+    return true;
+  }
+  else{
+    $('#hex-error').addClass('show');
+    $('#hex-error').removeClass('hide');
+    return false;
+  }
+}
+
 </script>
 
-<div style="padding-left:400px; padding-top:300px; width:100%; height:100%;">
-  <form action="aes_ui.php" method="post">
-    <div class="form-group" style="height:60px;">
-      <input type="text" class="form-control" id="aes-input" name="aes-input" placeholder="Enter your data ...." style="width:400px; height:50px; float:left;"
-      onKeyDown="textCounter(this, 'char_left_4', 16);" onKeyUp="textCounter(this,'char_left_4' ,16)">
-		<h4 id="char_left" class="char_left_4" style="position:relative; left:15px; top:15px;"></h4>
+<div style="padding-left:50px; padding-top:300px; width:100%; height:100%;">
+
+  <form action="aes_ui.php" method="post" onsubmit="return isValidHex($('#aes-key-input').val())">
+    <div class="form-group" style="">
+      <div style="height:50px; width:600px;">
+        <input type="text" class="form-control" id="aes-input" name="aes-input" placeholder="Enter your data ...." style="width:400px; height:50px; float:left;"
+        onKeyDown="textCounter(this, 'char_left_4', 16);" onKeyUp="textCounter(this,'char_left_4' ,16)">
+        <h4 id="char_left" class="char_left_4" style="position:relative; left:15px; top:15px; float:left;"></h4>
+      </div>
+
+      <br/>
+      <input type="radio" name="key_size" style="margin-right:10px;" checked>128 bits
+      <!-- <input type="radio" name="key_size" style="margin-right:10px; margin-left:50px;">192 bits
+      <input type="radio" name="key_size" style="margin-right:10px; margin-left:50px;">256 bits -->
+      <br/>
+      <br/>
+
+      <div style="height:50px; width:1000px;">
+        <input type="text" class="form-control" id="aes-key-input" name="aes-key-input" placeholder="Enter your hex key ...." style="width:400px; height:50px; display:block; float:left;" onKeyDown="textCounter(this, 'char_key_left_4', 32);" onKeyUp="textCounter(this,'char_key_left_4' ,32)">
+        <h4 id="char_key_left" class="char_key_left_4" style="position:relative; left:15px; top:15px; float:left;"></h4>
+        <p class="bg-danger hide" id="hex-error" style="font-weight:bold; padding:10px; width:30%; color:red; float:left; margin-left:40px; margin-top:5px;">Not a valid hex key ...</p>
+      </div>
+
+		</h4>
     </div>
 
     <button type="submit" class="btn btn-default">Encrypt It !!</button>

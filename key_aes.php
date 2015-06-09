@@ -62,6 +62,22 @@ class key_aes{
 		$this->display_aes_key_matrix($this->aes_key_bytes[0]);
 	}	
 
+	public function set_aes_key_hex($key_size=128, $user_hex_key){
+
+		$this->aes_key_size = $key_size;
+		$tmp_key = trim(str_replace(" ", "", $user_hex_key));
+		
+		for($k=0; $k<($key_size/4); $k++){
+			if($k != 0)
+				$this->aes_key_bytes[0] .= substr($user_hex_key, $k, 1);
+			else
+				$this->aes_key_bytes[0] = substr($user_hex_key, $k, 1);
+		}
+		$this->display_aes_key_matrix($this->aes_key_bytes[0]);
+		$this->aes_key_hexToWord();
+		$this->key_expansion($this->aes_key_words[0]);
+	}
+
 	public function gen_cryp_secure_key($key_size=128){
 
 		$this->aes_key_size = $key_size;
@@ -109,7 +125,7 @@ class key_aes{
 	public function aes_key_hexToWord(){
 		for($i=0; $i<($this->aes_key_size/32); $i++)
 			$this->aes_key_words[0][$i] = $this->aes_matrix[0][$i].$this->aes_matrix[1][$i].$this->aes_matrix[2][$i].$this->aes_matrix[3][$i];
-
+		
 		return $this->aes_key_words;
 	}
 

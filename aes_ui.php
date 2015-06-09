@@ -8,7 +8,11 @@ $path = $_SERVER['DOCUMENT_ROOT'].'/AES';
 
 require_once($path."/aes_encrypt.php");
 $aes_obj = new aes_encrypt();
-$aes_obj->start_aes_encrypt($_POST['aes-input'], '', 128, true);
+
+if(isset($_POST['aes-key-input']))
+	$aes_obj->start_aes_encrypt($_POST['aes-input'], $_POST['aes-key-input'], 128, true);
+else	
+	$aes_obj->start_aes_encrypt($_POST['aes-input'], '', 128, true);
 ?>
 
 <!-- Latest compiled and minified JavaScript -->
